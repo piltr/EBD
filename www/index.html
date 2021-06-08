@@ -55,7 +55,7 @@
                 <div class="toolbar-inner">
                 <!-- Toolbar links -->
                 <a href="#" class="link">Link 1</a>
-                <a href="#" class="link">Link 2</a>
+                <a href="#" id="link2" class="link">Link 2</a>
                 </div>
             </div>
         
@@ -92,11 +92,18 @@
                             </ul>
                           </div>
                           <button id="ingresar" class="button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
-          @click=${load}>
-          <span class="preloader"></span>
-          <span>Ingresar</span>
-        </button>
-
+                           @click=${load}>
+                          <span class="preloader"></span>
+                          <span>Ingresar</span>
+                          </button>
+                          <div class="item-content center">
+                            <p>registrarse</p>
+                          </div>
+                          <div>
+                            <a href="/about/" data-view=".page-content">About</a>
+                            <a href="/perfil/" data-view=".page-content">Perfil</a>
+                            <a href="/registro/" data-view=".page-content">Registro</a>
+                          </div>
 
                     </div>
                 </div>
