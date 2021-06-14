@@ -37,7 +37,7 @@ $$(document).on('deviceready', function() {
     var miid = "asd@as.as"
    var data = {nombre : "pepe", mail : "pepe@asd.as",rol : "administrador"};
    console.log(data)
-   db.collection("personas").doc(miid).set(data)
+   db.collection("personas").add(data)
     .then( function (docRef){
       console.log("el id es " + docRef.id)
     })
