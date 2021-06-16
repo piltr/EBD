@@ -16,12 +16,12 @@ var app = new Framework7({
     // Add default routes
     routes: [
       {
-        path: '/about/',
-        url: 'about.html',
-        path: '/perfil/',
-        url: 'perfil.html',
         path: '/registro/',
         url: 'registro.html',
+      },
+      {
+        path: '/perfil/',
+        url: 'perfil.html',
       },
     ]
     // ... other parameters
@@ -32,7 +32,10 @@ var mainView = app.views.create('.view-main');
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function() {
     console.log("Device is ready!");
-
+    anterior = "index.html"
+    $$("#atras").on("click", function(){
+      location.href = anterior
+    })
 });
 
 // Option 1. Using one 'page:init' handler for all pages
@@ -44,6 +47,30 @@ $$(document).on('page:init', function (e) {
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
+    $$("#registrarse").on("click", function(){
+      anterior = location.href
+    })
+    $$("#ingresar").on("click", ingresar)
+
+    function ingresar() {
+      alert("ingresare")
+      var email = $$("#userEmail").val()
+      var password = $$("#userContraseña").val()
+      firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+    // Signed in
+    //var user = userCredential.user;
+    alert("el usuario esta correctamente logueado")
+    location.attr = "perfil.html"
+    // ...
+  })
+  .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log(errorCode, errorMessage)
+  });
+
+    }
 })
 $$(document).on('page:init', '.page[data-name="about"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
@@ -56,11 +83,10 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
     var clientes = db.collection("clientes")
     var tipoUsuario = ""
     console.log(e);
-    alert('Hello');
     $$("#registro").on("click", registrar)
     $$("#cliente").on("click", function () {
-      $$("#repartidor").removeClass("button-active")
-      $$("#cliente").addClass("button-active")
+    $$("#repartidor").removeClass("button-active")
+    $$("#cliente").addClass("button-active")
       tipoUsuario = "clientes"
     })
     $$("#repartidor").on("click", function () {
@@ -68,6 +94,7 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
       $$("#cliente").removeClass("button-active")
       $$("#repartidor").addClass("button-active")
     })
+
 
     
     
@@ -93,9 +120,8 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
     function base(mail) {
       alert("bd")
       var data = {
-        nombre: "juan carlos",
-        rol: tipoUsuario,
-        apellido: "gonzales"
+        nombre: $$("nombres").val(),
+        apellido: $$("apellido").val()
         };
         // MiID es una VARIABLE que yo le asigno un valor
         db.collection(tipoUsuario).doc(mail).set(data);
