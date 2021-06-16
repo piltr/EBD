@@ -32,18 +32,7 @@ var mainView = app.views.create('.view-main');
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function() {
     console.log("Device is ready!");
-    var db = firebase.firestore()
-    colPersonas =  db.collection("personas")
-    var miid = "asd@as.as"
-   var data = {nombre : "pepe", mail : "pepe@asd.as",rol : "administrador"};
-   console.log(data)
-   db.collection("personas").add(data)
-    .then( function (docRef){
-      console.log("el id es " + docRef.id)
-    })
-    .catch( function(error){
-      console.log("error" + error)
-    })
+
 });
 
 // Option 1. Using one 'page:init' handler for all pages
@@ -55,35 +44,34 @@ $$(document).on('page:init', function (e) {
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
-    alert('Hello');
-    // crea usuario en firebase
-    //var email = "asda@jhasjhgas.com";
-    //var clave = "34562ijss";
-    //firebase.auth().createUserWithEmailAndPassword(email, clave)
-    //    .catch( function(error) {
-    //        console.error(error.code);
-    //        if (error.code == "auth/email-already-in-use") {
-    //            console.error("el mail ya existe...");
-    //        }
-    //        //console.error(error.message);
-    //    } )
-    //    .then( function() {
-    //        console.log('que paso??');
-    //        mainView.router.navigate('/gracias/');
-    //    });
 })
 $$(document).on('page:init', '.page[data-name="about"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
     console.log(e);
-    alert('Hello');
 })
 $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
+    var db = firebase.firestore();
+    var repartidores = db.collection("repartidores")
+    var clientes = db.collection("clientes")
+    var tipoUsuario = ""
     console.log(e);
     alert('Hello');
-    $$("#registro").on("click", fun)
+    $$("#registro").on("click", registrar)
+    $$("#cliente").on("click", function () {
+      $$("#repartidor").removeClass("button-active")
+      $$("#cliente").addClass("button-active")
+      tipoUsuario = "clientes"
+    })
+    $$("#repartidor").on("click", function () {
+      tipoUsuario = "repartidores"
+      $$("#cliente").removeClass("button-active")
+      $$("#repartidor").addClass("button-active")
+    })
 
-    function fun() {
+    
+    
+    function registrar() {
       console.log("Registrando")
       // crea usuario en firebase
     var email = $$("#email").value();
@@ -95,11 +83,24 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
             if (error.code == "auth/email-already-in-use") {
                 console.error("el mail ya existe...");
            }
-            //console.error(error.message);
-        } )
+           console.error(error.message)
+        })
         .then( function() {
-            console.log('que paso??');
-            mainView.router.navigate('/gracias/');
+          base(email)
+          alert("registrado")
         });
+    }
+    function base(mail) {
+      alert("bd")
+      var data = {
+        nombre: "juan carlos",
+        rol: tipoUsuario,
+        apellido: "gonzales"
+        };
+        // MiID es una VARIABLE que yo le asigno un valor
+        db.collection(tipoUsuario).doc(mail).set(data);
+    }
+    function ale() {
+
     }
 })
