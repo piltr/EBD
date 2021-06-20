@@ -11,3 +11,9 @@
 {
     margin-top: 3vh;
 }
+#cords
+{
+    background-color: black;
+    color: chartreuse;
+    float: left;
+}

@@ -43,7 +43,26 @@ $$(document).on('deviceready', function() {
       location.href = anterior
     })
 });
+var onSuccess = function(position) {
+  alert('Latitude: '          + position.coords.latitude          + '\n' +
+        'Longitude: '         + position.coords.longitude         + '\n' +
+        'Altitude: '          + position.coords.altitude          + '\n' +
+        'Accuracy: '          + position.coords.accuracy          + '\n' +
+        'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+        'Heading: '           + position.coords.heading           + '\n' +
+        'Speed: '             + position.coords.speed             + '\n' +
+        'Timestamp: '         + position.timestamp                + '\n');
+};
+function activate() { 
+}
+navigator.geolocation.getCurrentPosition(activate, onError);
+// onError Callback receives a PositionError object
+//
 
+function onError(error) {
+  alert('code: '    + error.code    + '\n' +
+        'message: ' + error.message + '\n');
+}
 // Option 1. Using one 'page:init' handler for all pages
 $$(document).on('page:init', function (e) {
     // Do something here when page loaded and initialized
@@ -53,11 +72,13 @@ $$(document).on('page:init', function (e) {
 // Option 2. Using live 'page:init' event handlers for each page
 $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
+
     $$("#registrarse").on("click", function(){
       anterior = location.href
     })
     $$("#ingresar").on("click", ingresar)
 
+    
     function ingresar() {
       email = $$("#userEmail").val()
       var password = $$("#userContraseña").val()
@@ -99,35 +120,14 @@ $$(document).on('page:init', '.page[data-name="ciclista"]', function (e) {
     console.log(e);
     $$("#bienvenida2").html("<div>Bienvenido "+nombreDeUsuario+" listo para salir a las calles?</div>")
     $$("#cords").on("click", function(){
-      alert("Ey")
- // onSuccess Callback
+    // onSuccess Callback
     // This method accepts a Position object, which contains the
     // current GPS coordinates
     //
-    var onSuccess = function(position) {
-      alert('Latitude: '          + position.coords.latitude          + '\n' +
-            'Longitude: '         + position.coords.longitude         + '\n' +
-            'Altitude: '          + position.coords.altitude          + '\n' +
-            'Accuracy: '          + position.coords.accuracy          + '\n' +
-            'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
-            'Heading: '           + position.coords.heading           + '\n' +
-            'Speed: '             + position.coords.speed             + '\n' +
-            'Timestamp: '         + position.timestamp                + '\n');
-  };
 
-  // onError Callback receives a PositionError object
-  //
-  function onError(error) {
-      alert('code: '    + error.code    + '\n' +
-            'message: ' + error.message + '\n');
-  }
 
   navigator.geolocation.getCurrentPosition(onSuccess, onError);
     })
-    function onError(error) {
-      alert('code: '    + error.code    + '\n' +
-            'message: ' + error.message + '\n');
-  }
 
 
 })
