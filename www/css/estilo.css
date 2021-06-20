@@ -17,3 +17,23 @@
     color: chartreuse;
     float: left;
 }
+#tienda1
+{
+    background-color: chocolate;
+}
+#tienda2
+{
+    background-color: rgba(32, 204, 132, 0.712);
+}
+#tienda3
+{
+    background-color: rgb(30, 168, 210);
+}
+#logo
+{
+    height: 15vh;
+}
+#logo1
+{
+    height: 15vh;
+}

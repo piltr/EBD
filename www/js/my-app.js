@@ -27,6 +27,18 @@ var app = new Framework7({
         path: '/ciclista/',
         url: 'ciclista.html',
       },
+      {
+        path: '/tienda/',
+        url: 'tienda.html',
+      },
+      {
+        path: '/productos/',
+        url: 'productos.html',
+      },
+      {
+        path: '/index/',
+        url: 'index.html',
+      },
     ]
     // ... other parameters
   });
@@ -38,9 +50,11 @@ $$(document).on('deviceready', function() {
     console.log("Device is ready!");
     db = firebase.firestore();
     usuarios = db.collection("Usuarios")
-    anterior = "index.html"
+    anterior = "/index/"
     $$("#atras").on("click", function(){
-      location.href = anterior
+      console.log(anterior)
+        mainView.router.navigate(anterior)
+        anterior = "/index/"
     })
 });
 var onSuccess = function(position) {
@@ -74,7 +88,6 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
 
     $$("#registrarse").on("click", function(){
-      anterior = location.href
     })
     $$("#ingresar").on("click", ingresar)
 
@@ -97,7 +110,6 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     datos(email)
     }
     function datos(email) {
-
      var usuario =  usuarios.doc(email)
      console.log(email)
       usuario.get().then((doc) => {
@@ -191,4 +203,18 @@ $$(document).on('page:init', '.page[data-name="cliente"]', function (e) {
   // Do something here when page with data-name="about" attribute loaded and initialized
   console.log(e);
   $$("#bienvenida1").html("<div>Bienvenido "+nombreDeUsuario+" listo para hacer un pedido?</div>")
+})
+$$(document).on('page:init', '.page[data-name="tienda"]', function (e) {
+  // Do something here when page with data-name="about" attribute loaded and initialized
+  console.log(e);
+  $$("#bProductos").on("click", function () {
+    console.log(anterior)
+    anterior = "/tienda/"
+    console.log(anterior)
+    
+  })
+})
+$$(document).on('page:init', '.page[data-name="productos"]', function (e) {
+  // Do something here when page with data-name="about" attribute loaded and initialized
+  console.log(e);
 })
