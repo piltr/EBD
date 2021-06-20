@@ -20,8 +20,12 @@ var app = new Framework7({
         url: 'registro.html',
       },
       {
-        path: '/perfil/',
-        url: 'perfil.html',
+        path: '/cliente/',
+        url: 'cliente.html',
+      },
+      {
+        path: '/ciclista/',
+        url: 'ciclista.html',
       },
     ]
     // ... other parameters
@@ -32,6 +36,8 @@ var mainView = app.views.create('.view-main');
 // Handle Cordova Device Ready Event
 $$(document).on('deviceready', function() {
     console.log("Device is ready!");
+    db = firebase.firestore();
+    usuarios = db.collection("Usuarios")
     anterior = "index.html"
     $$("#atras").on("click", function(){
       location.href = anterior
@@ -53,15 +59,13 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     $$("#ingresar").on("click", ingresar)
 
     function ingresar() {
-      alert("ingresare")
-      var email = $$("#userEmail").val()
+      email = $$("#userEmail").val()
       var password = $$("#userContraseña").val()
       firebase.auth().signInWithEmailAndPassword(email, password)
   .then((userCredential) => {
     // Signed in
     //var user = userCredential.user;
-    alert("el usuario esta correctamente logueado")
-    location.attr = "perfil.html"
+    mainView.router.navigate('/ciclista/');
     // ...
   })
   .catch((error) => {
@@ -69,26 +73,77 @@ $$(document).on('page:init', '.page[data-name="index"]', function (e) {
     var errorMessage = error.message;
     console.log(errorCode, errorMessage)
   });
-
+    datos(email)
     }
+    function datos(email) {
+
+     var usuario =  usuarios.doc(email)
+     console.log(email)
+      usuario.get().then((doc) => {
+        if (doc.exists){
+          tipoDeUsuario = doc.data().tipo
+          nombreDeUsuario = doc.data().nombre
+          tipoDeUsuario = doc.data().tipo
+          console.log(nombreDeUsuario, tipoDeUsuario)
+        } else {
+          console.log("No se encontro el dato del usuario")
+        }
+        }).catch((error) => {
+        console.log("No se pudieron obtener los datos del usuario")
+      })
+      }
+
 })
-$$(document).on('page:init', '.page[data-name="about"]', function (e) {
+$$(document).on('page:init', '.page[data-name="ciclista"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
     console.log(e);
+    $$("#bienvenida2").html("<div>Bienvenido "+nombreDeUsuario+" listo para salir a las calles?</div>")
+    $$("#cords").on("click", function(){
+      alert("Ey")
+ // onSuccess Callback
+    // This method accepts a Position object, which contains the
+    // current GPS coordinates
+    //
+    var onSuccess = function(position) {
+      alert('Latitude: '          + position.coords.latitude          + '\n' +
+            'Longitude: '         + position.coords.longitude         + '\n' +
+            'Altitude: '          + position.coords.altitude          + '\n' +
+            'Accuracy: '          + position.coords.accuracy          + '\n' +
+            'Altitude Accuracy: ' + position.coords.altitudeAccuracy  + '\n' +
+            'Heading: '           + position.coords.heading           + '\n' +
+            'Speed: '             + position.coords.speed             + '\n' +
+            'Timestamp: '         + position.timestamp                + '\n');
+  };
+
+  // onError Callback receives a PositionError object
+  //
+  function onError(error) {
+      alert('code: '    + error.code    + '\n' +
+            'message: ' + error.message + '\n');
+  }
+
+  navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    })
+    function onError(error) {
+      alert('code: '    + error.code    + '\n' +
+            'message: ' + error.message + '\n');
+  }
+
+
 })
 $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
     // Do something here when page with data-name="about" attribute loaded and initialized
-    var db = firebase.firestore();
-    var repartidores = db.collection("repartidores")
-    var clientes = db.collection("clientes")
+    
     var tipoUsuario = ""
     console.log(e);
     $$("#registro").on("click", registrar)
+
     $$("#cliente").on("click", function () {
     $$("#repartidor").removeClass("button-active")
     $$("#cliente").addClass("button-active")
       tipoUsuario = "clientes"
     })
+
     $$("#repartidor").on("click", function () {
       tipoUsuario = "repartidores"
       $$("#cliente").removeClass("button-active")
@@ -103,7 +158,6 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
       // crea usuario en firebase
     var email = $$("#email").value();
     var clave = $$("#password").value();
-    console.log(email, clave)
     firebase.auth().createUserWithEmailAndPassword(email, clave)
         .catch( function(error) {
             console.error(error.code);
@@ -118,15 +172,23 @@ $$(document).on('page:init', '.page[data-name="registro"]', function (e) {
         });
     }
     function base(mail) {
-      alert("bd")
+      
       var data = {
-        nombre: $$("nombres").val(),
-        apellido: $$("apellido").val()
+        nombre: $$("#nombres").val(),
+        apellido: $$("#apellidos").val(),
+        tipo: tipoUsuario,
         };
         // MiID es una VARIABLE que yo le asigno un valor
-        db.collection(tipoUsuario).doc(mail).set(data);
+        db.collection("Usuarios").doc(mail).set(data)
+        .then( function() {
+           console.log("bd seteada")
+           location.href = "index.html"
+        });
+        
     }
-    function ale() {
-
-    }
+})
+$$(document).on('page:init', '.page[data-name="cliente"]', function (e) {
+  // Do something here when page with data-name="about" attribute loaded and initialized
+  console.log(e);
+  $$("#bienvenida1").html("<div>Bienvenido "+nombreDeUsuario+" listo para hacer un pedido?</div>")
 })
