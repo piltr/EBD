@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!--
         Customize this policy to fit your own app's needs. For more guidance, see:
@@ -22,7 +23,7 @@
     <!-- Color theme for statusbar -->
     <!-- <meta name="theme-color" content="#2196f3"> -->
     <meta name="color-scheme" content="light dark">
-    
+
     <!-- Your app title -->
     <title>My App</title>
     <!-- Path to Framework7 Library CSS -->
@@ -39,10 +40,10 @@
     <div id="app">
         <!-- Statusbar overlay -->
         <div class="statusbar"></div>
-    
+
         <!-- Your main view, should have "view-main" class -->
         <div class="view view-main">
-       
+
             <!-- Top Navbar -->
             <div class="navbar">
                 <div class="navbar-bg"></div>
@@ -52,70 +53,70 @@
                     <div class="right"><i class="icon icon-forward"></i></div>
                 </div>
             </div>
-    
+
             <!-- Toolbar -->
             <div class="toolbar toolbar-bottom">
                 <div class="toolbar-inner">
-                <!-- Toolbar links -->
-                <a href="#" class="link">Link 1</a>
-                <a href="#" id="link2" class="link">Link 2</a>
+                    <!-- Toolbar links -->
+                    <a href="#" class="link">Link 1</a>
+                    <a href="#" id="link2" class="link">Link 2</a>
                 </div>
             </div>
-        
-        <!-- Initial Page, "data-name" contains page name -->
+
+            <!-- Initial Page, "data-name" contains page name -->
             <div data-name="index" class="page">
                 <!-- Scrollable page content -->
                 <div class="page-content">
                     <div class="block">
-                        
+
                         <div class="list">
                             <ul>
 
-                              <!-- additional "item-input-outline" class -->
+                                <!-- additional "item-input-outline" class -->
 
-                              <li class="item-content item-input item-input-outline">
-                                <div class="item-inner">
-                                  <div class="item-title item-label">Email</div>
-                                  <div class="item-input-wrap">
-                                    <input id="userEmail" type="text" name="Email">
-                                    <span class="input-clear-button"></span>
-                                  </div>
-                                </div>
-                              </li>
-                              
-                              <li class="item-content item-input item-input-outline">
-                                <div class="item-inner">
-                                  <div class="item-title item-label">Contrseña</div>
-                                  <div class="item-input-wrap">
-                                    <input id="userContraseña" type="password" name="pass">
-                                    <span class="input-clear-button"></span>
-                                  </div>
-                                </div>
-                              </li>
+                                <li class="item-content item-input item-input-outline">
+                                    <div class="item-inner">
+                                        <div class="item-title item-label">Email</div>
+                                        <div class="item-input-wrap">
+                                            <input id="userEmail" type="text" name="Email">
+                                            <span class="input-clear-button"></span>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="item-content item-input item-input-outline">
+                                    <div class="item-inner">
+                                        <div class="item-title item-label">Contrseña</div>
+                                        <div class="item-input-wrap">
+                                            <input id="userContraseña" type="password" name="pass">
+                                            <span class="input-clear-button"></span>
+                                        </div>
+                                    </div>
+                                </li>
 
                             </ul>
-                          </div>
-                          <div id="ingresar">
-                          <button class="button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
-                           @click=${load}>
+                        </div>
+                        <div id="ingresar">
+                            <button class="button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}" @click=${load}>
                           <span class="preloader"></span>
                           <span>Ingresar</span>
                           </button>
-                          </div>
+                        </div>
 
-                          <a href="/registro/" data-view=".page-content">
-                          <button id="registrarse" class="button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
-                           @click=${load}>
+                        <a href="/registro/" data-view=".page-content">
+                            <button id="registrarse" class="button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}" @click=${load}>
                           <span class="preloader"></span>
                           <span>Registrarse</span>
                           </button>
-                          </a>
+                        </a>
 
-                          <div>
+                        <div>
                             <a href="/ciclista/" data-view=".page-content">ciclista</a>
                             <a href="/cliente/" data-view=".page-content">cliente</a>
                             <a href="/tienda/" data-view=".page-content">tienda</a>
-                          </div>
+                            <a href="/registrot/" data-view=".page-content">tiendaR</a>
+                            <a href="/agregarProducto/" data-view=".page-content">producto</a>
+                        </div>
 
                     </div>
                 </div>
@@ -128,25 +129,25 @@
     <script type="text/javascript" src="lib/framework7/framework7-bundle.min.js"></script>
     <script type="text/javascript" src="js/my-app.js"></script>
     <!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.7/firebase-firestore.js"></script>
 
-<!-- TODO: Add SDKs for Firebase products that you want to use
+    <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-<script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyACa_A66x0BMmFL5iHibU7OBe9wtjN9M0U",
-    authDomain: "piltri-isola.firebaseapp.com",
-    projectId: "piltri-isola",
-    storageBucket: "piltri-isola.appspot.com",
-    messagingSenderId: "134692052580",
-    appId: "1:134692052580:web:54168f5d88ce3c673e4971"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-</script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyACa_A66x0BMmFL5iHibU7OBe9wtjN9M0U",
+            authDomain: "piltri-isola.firebaseapp.com",
+            projectId: "piltri-isola",
+            storageBucket: "piltri-isola.appspot.com",
+            messagingSenderId: "134692052580",
+            appId: "1:134692052580:web:54168f5d88ce3c673e4971"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
 </body>
 
 </html>

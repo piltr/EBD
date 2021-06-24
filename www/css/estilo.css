@@ -1,39 +1,53 @@
-#titulo
-{
+#titulo {
     padding-bottom: 0px;
     padding-top: 30px;
 }
-#inputs
-{
+
+#inputs {
     margin-top: 0px;
 }
-#registrarse
-{
+
+#registrarse {
     margin-top: 3vh;
 }
-#cords
-{
+
+#cords {
     background-color: black;
     color: chartreuse;
     float: left;
 }
-#tienda1
-{
+
+#tienda1 {
     background-color: chocolate;
 }
-#tienda2
-{
+
+#tienda2 {
     background-color: rgba(32, 204, 132, 0.712);
 }
-#tienda3
-{
+
+#tienda3 {
     background-color: rgb(30, 168, 210);
 }
-#logo
-{
+
+#logo {
     height: 15vh;
 }
-#logo1
-{
+
+#logo1 {
     height: 15vh;
+}
+
+#img1,
+#img2,
+#img3,
+#img4 {
+    height: 15vh;
+}
+
+.w33 {
+    width: 33%;
+}
+
+.w100 {
+    width: 100%;
 }
