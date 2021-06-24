@@ -40,6 +40,9 @@
               {
                   path: '/index/',
                   url: 'index.html',
+              },
+              {
+
                   path: '/agregarProducto/',
                   url: 'agregarProducto.html',
               },
@@ -100,11 +103,18 @@
           email = $$("#userEmail").val()
           var password = $$("#userContraseña").val()
           firebase.auth().signInWithEmailAndPassword(email, password)
-              .then((userCredential) => {
-                  // Signed in
-                  //var user = userCredential.user;
-                  mainView.router.navigate('/ciclista/');
-                  // ...
+              .then(() => {
+                  usuarios.doc(email).get()
+                      .then(function(doc) {
+                          var tipo = doc.data().tipo
+                          if (tipo == "clientes") {
+                              alert("llendo a cliente")
+                              mainView.router.navigate('/cliente/');
+                          } else if (tipo == "repartidores") {
+                              alert("llendo a ciclista")
+                              mainView.router.navigate('/ciclista/');
+                          }
+                      })
               })
               .catch((error) => {
                   var errorCode = error.code;
@@ -134,6 +144,7 @@
   })
   $$(document).on('page:init', '.page[data-name="ciclista"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
+      alert("entro en ciclista")
       console.log(e);
       $$("#bienvenida2").html("<div>Bienvenido " + nombreDeUsuario + " listo para salir a las calles?</div>")
       $$("#cords").on("click", function() {
@@ -206,6 +217,7 @@
   })
   $$(document).on('page:init', '.page[data-name="cliente"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
+      alert("entro en cliente")
       console.log(e);
       $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
   })
