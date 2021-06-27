@@ -53,6 +53,7 @@
     "cordova-android": "^9.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-plugin-browsersync-gen2": "^1.1.7",
+    "cordova-plugin-camera": "^5.0.2",
     "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-whitelist": "^1.3.4",
     "cpy-cli": "^3.1.1",
@@ -90,6 +91,9 @@
       "cordova-plugin-browsersync-gen2": {},
       "cordova-plugin-geolocation": {
         "GPS_REQUIRED": "true"
+      },
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
       }
     },
     "platforms": [

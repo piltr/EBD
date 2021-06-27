@@ -1,5 +1,9 @@
   // If we need to use custom DOM library, let's save it to $$ variable:
   var $$ = Dom7;
+  var map, platform;
+  var pos, latitud, longitud;
+  prodArray = []
+  masterCarrito = ""
 
   var app = new Framework7({
       // App root element
@@ -66,14 +70,43 @@
       })
   });
   var onSuccess = function(position) {
-      alert('Latitude: ' + position.coords.latitude + '\n' +
-          'Longitude: ' + position.coords.longitude + '\n' +
-          'Altitude: ' + position.coords.altitude + '\n' +
-          'Accuracy: ' + position.coords.accuracy + '\n' +
-          'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' +
-          'Heading: ' + position.coords.heading + '\n' +
-          'Speed: ' + position.coords.speed + '\n' +
-          'Timestamp: ' + position.timestamp + '\n');
+      Latitude = position.coords.latitude
+      Longitude = position.coords.longitude
+      console.log("latitud obtenida: " + Latitude)
+          //'Altitude: ' + position.coords.altitude + '\n' +
+          //'Accuracy: ' + position.coords.accuracy + '\n' +
+          //'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' +
+          //'Heading: ' + position.coords.heading + '\n' +
+          //'Speed: ' + position.coords.speed + '\n' +
+          //'Timestamp: ' + position.timestamp + '\n');
+      var defaultLayers = platform.createDefaultLayers();
+      map = new H.Map(
+          document.getElementById('mapContainer'),
+          defaultLayers.vector.normal.map, {
+              zoom: 15,
+              center: { lat: Latitude, lng: Longitude }
+          });
+      coords = { lat: Latitude, lng: Longitude };
+      marker = new H.map.Marker(coords);
+      var mapEvents = new H.mapevents.MapEvents(map);
+
+      // Add behavior to the map: panning, zooming, dragging.
+      var behavior = new H.mapevents.Behavior(mapEvents);
+
+      // Create a marker icon from an image URL:
+      var icon = new H.map.Icon('img/mapaCarrito.png');
+      bici = new H.map.Icon('img/mapaBici.png');
+
+      // Create a marker using the previously instantiated icon:
+      var markerCarrito = new H.map.Marker({ lat: Latitude, lng: Longitude }, { icon: icon });
+      bicimap = new H.map.Marker({ lat: "-41.9595776", lng: "-71.5343402" }, { icon: bici });
+
+      // Add the marker to the map:
+      map.addObject(markerCarrito);
+      map.addObject(bicimap);
+      // Add the marker to the map and center the map at the location of the marker:
+      map.addObject(marker);
+      map.setCenter(coords);
   };
 
   function activate() {}
@@ -94,24 +127,28 @@
   // Option 2. Using live 'page:init' event handlers for each page
   $$(document).on('page:init', '.page[data-name="index"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
+      platform = new H.service.Platform({
+          'apikey': '8lEBP2-tHJsihdog6soHSApasBhLOXzrTWrTDsPUPw4'
+      });
 
       $$("#registrarse").on("click", function() {})
       $$("#ingresar").on("click", ingresar)
 
-
       function ingresar() {
-          email = $$("#userEmail").val()
-          var password = $$("#userContraseña").val()
+          email = "ciclista@ejemplo.com"
+          password = "asd15987"
+              //email = $$("#userEmail").val()
+              //var password = $$("#userContraseña").val()
           firebase.auth().signInWithEmailAndPassword(email, password)
               .then(() => {
                   usuarios.doc(email).get()
                       .then(function(doc) {
                           var tipo = doc.data().tipo
                           if (tipo == "clientes") {
-                              alert("llendo a cliente")
+
                               mainView.router.navigate('/cliente/');
                           } else if (tipo == "repartidores") {
-                              alert("llendo a ciclista")
+
                               mainView.router.navigate('/ciclista/');
                           }
                       })
@@ -131,7 +168,8 @@
               if (doc.exists) {
                   tipoDeUsuario = doc.data().tipo
                   nombreDeUsuario = doc.data().nombre
-                  tipoDeUsuario = doc.data().tipo
+                  latUsuario = doc.data().lat
+                  longUsuario = doc.data().long
                   console.log(nombreDeUsuario, tipoDeUsuario)
               } else {
                   console.log("No se encontro el dato del usuario")
@@ -143,19 +181,50 @@
 
   })
   $$(document).on('page:init', '.page[data-name="ciclista"]', function(e) {
-      // Do something here when page with data-name="about" attribute loaded and initialized
-      alert("entro en ciclista")
+
       console.log(e);
       $$("#bienvenida2").html("<div>Bienvenido " + nombreDeUsuario + " listo para salir a las calles?</div>")
-      $$("#cords").on("click", function() {
-          // onSuccess Callback
-          // This method accepts a Position object, which contains the
-          // current GPS coordinates
-          //
+      $$("#updateC").on("click", function() {
+          mapaA(email)
 
-
-          navigator.geolocation.getCurrentPosition(onSuccess, onError);
+          function mapaA(email) {
+              var usuario = usuarios.doc(email)
+              usuario.get().then((doc) => {
+                  if (doc.exists) {
+                      latUsuario = doc.data().lat
+                      longUsuario = doc.data().long
+                      console.log(latUsuario, longUsuario)
+                  } else {
+                      console.log("No se encontro el dato del usuario")
+                  }
+              }).catch((error) => {
+                  console.log("No se pudieron obtener los datos del usuario" + error)
+              })
+          }
+          map.removeObject(bicimap)
+          bicimap = new H.map.Marker({ lat: latUsuario, lng: longUsuario }, { icon: bici });
+          map.addObject(bicimap)
       })
+      $$("#subir").on("click", function() {
+          updatePoss(email)
+
+          function updatePoss(email) {
+
+              //agregar registros temporales de ubicacion F&01
+              db.collection("Usuarios").doc(email).update({ lat: "-41.9731194", long: "-71.53961967" })
+                  .catch(function(error) {
+                      console.log("Error: " + error);
+                  })
+
+              .then(function() {
+                  console.log("posicion actualizada");
+              })
+
+          }
+
+      })
+
+      navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
 
   })
@@ -196,7 +265,6 @@
               })
               .then(function() {
                   base(email)
-                  alert("registrado")
               });
       }
 
@@ -212,12 +280,10 @@
                   console.log("bd seteada")
                   location.href = "index.html"
               });
-
       }
   })
   $$(document).on('page:init', '.page[data-name="cliente"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
-      alert("entro en cliente")
       console.log(e);
       $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
   })
@@ -249,16 +315,14 @@
 
 
       function agregarProducto(producto, tienda) {
-          alert(producto)
-          alert(tienda)
 
           var data = {
               nombre: $$("#nombreProducto").val(),
               precio: $$("#precio").val(),
               medida: $$("#medida").val(),
-              imagenP: $$("#imagenP").val(),
-
+              imagen: $$("#imagenP").val(),
           };
+
           db.collection("Tiendas").doc(tienda).collection("Productos").doc("Producto" + producto).set(data)
               .catch(function(error) {
                   console.error(error.code);
@@ -276,12 +340,59 @@
   $$(document).on('page:init', '.page[data-name="registrot"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       console.log(e);
+
+
+
+      colorPickerWheel = app.colorPicker.create({
+          inputEl: '#demo-color-picker-wheel',
+          targetEl: '#demo-color-picker-wheel-value',
+          targetElSetBackgroundColor: true,
+          modules: ['wheel'],
+          openIn: 'popover',
+          value: {
+              hex: '#bcff75',
+          },
+          on: {
+              closed: function() {
+                  $$("#backgroundColor").css("background-color", colorPickerWheel.getValue().hex);
+              }
+          },
+      });
+      //colorPickerWheel.getValue().hex
       $$("#registrotienda").on("click", function() {
           numeroDeTiendas()
-
       })
 
       function numeroDeTiendas() {
+          if (!$$("#nombreTienda").val()) {
+              alert("Tiene que ingresar el nombre de su comercio")
+              return
+          }
+
+          if (!$$("#categoria").val()) {
+              alert("Tiene que determinar la caregoria de su comercio")
+              return
+          }
+          if (!$$("#imagen").val()) {
+              alert("Tiene que referenciar una imagen para su comercio")
+              return
+          }
+          if (!$$("#horario").val()) {
+              alert("Tiene que referenciar una imagen para su comercio")
+              return
+          }
+          alert(colorPickerWheel.getValue().hex)
+          if (colorPickerWheel.getValue().hex == "#000000") {
+
+              alert("El color de fondo debe ser distinto de negro")
+              return
+          }
+          if (colorPickerWheel.getValue().hex == "#ffffff") {
+
+              alert("El color de fondo debe ser distinto de blanco")
+              return
+          }
+
           var numeroDeTienda = 0
           tiendas.get()
               .then(function(querySnapshot) {
@@ -304,8 +415,9 @@
           var data = {
               nombre: $$("#nombreTienda").val(),
               categoria: $$("#categoria").val(),
-              horario: $$("#horario").val(),
+              horario: $$("#horario").val(), //F&02
               imagen: $$("#imagen").val(),
+              color: colorPickerWheel.getValue().hex
 
           };
           db.collection("Tiendas").doc("tienda" + tienda).set(data)
@@ -315,6 +427,7 @@
                   console.error(error.message)
               })
               .then(function() {
+                  alert("Tienda registrada con el identificador: tienda" + tienda)
                   console.log("tienda registrada")
                   location.href = "index.html"
               });
@@ -325,6 +438,10 @@
   $$(document).on('page:init', '.page[data-name="tienda"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       cargarTiendas()
+      $$("#botonMas").on("click", function() {
+          $$("#listaCarrito").html(masterCarrito)
+      })
+
 
       function cargarTiendas() {
           numeroDeTienda = 1
@@ -348,6 +465,8 @@
                           mainView.router.navigate('/productos/');
                           anterior = "/tienda/"
                       })
+
+                      $$("#tienda" + numeroDeTienda).css("background-color", doc.data().color)
                       numeroDeTienda += 1
                   });
               })
@@ -373,9 +492,9 @@
           productos.get()
               .then(function(querySnapshot) {
                   querySnapshot.forEach(function(doc) {
+
                       prod += 1
-                      console.log(doc)
-                      $$("#pantallaProductos").append('<div id="producto' + prod + '" class="justify-content-center display-flex"> ' +
+                      prodArray["producto" + prod] = '<li><div id="producto' + prod + '" class="justify-content-center display-flex"> ' +
                           '<div id="logo" class="col-33">' +
                           '<img id="logo1" src="' + doc.data().imagen + '" alt="">' +
                           '</div>' +
@@ -385,7 +504,12 @@
                           '<div class="col-33">' +
                           '<p>' + doc.data().precio + 'x' + doc.data().medida + '</p>' +
                           '</div>' +
-                          '</div>')
+                          '</div></li>'
+                      $$("#pantallaProductos").append(prodArray["producto" + prod])
+
+                      $$("#producto" + prod).on("click", function() {
+                          onClick(this.id)
+                      })
                   });
               })
               .catch(function(error) {
@@ -393,6 +517,12 @@
                   console.log("Error: ", error);
 
               });
+      }
+
+      function onClick(id) {
+          alert(id)
+          console.log(prodArray[id])
+          masterCarrito += prodArray[id]
       }
       console.log(e);
   })
