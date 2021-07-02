@@ -1,6 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Rancho&display=swap');
 #titulo {
     padding-bottom: 0px;
     padding-top: 30px;
+}
+
+.page-content {
+    margin-top: 60px;
+}
+
+#t1 {
+    font-family: 'Rancho', cursive;
+    font-size: 6vh;
+}
+
+#bienvenidaContent {
+    margin-top: 60px;
+    background-image: url("img\backgrund.jpg")
 }
 
 #inputs {
@@ -75,4 +90,34 @@
 #logoCarritoButton {
     height: 32px;
     width: 32px;
+}
+
+.tiendaCss {
+    border-radius: 5vw;
+    border: 1px solid #000;
+    opacity: 1;
+    color: white;
+    margin: 1vw;
+}
+
+#pantallaTiendas {
+    background-color: rgb(255, 255, 255);
+}
+
+#index {
+    background-color: rgb(255, 255, 255);
+}
+
+#logo1 {
+    border-top-left-radius: 3vh;
+    border-bottom-left-radius: 3vh;
+}
+
+#contenedorImagen {
+    background-color: violet;
+}
+
+#caraCiclista {
+    width: 100%;
+    height: 100%;
 }

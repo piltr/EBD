@@ -26,6 +26,14 @@
                   url: 'cliente.html',
               },
               {
+                  path: '/bienvenida/',
+                  url: 'bienvenida.html',
+              },
+              {
+                  path: '/rMapa/',
+                  url: 'rMapa.html',
+              },
+              {
                   path: '/ciclista/',
                   url: 'ciclista.html',
               },
@@ -62,6 +70,7 @@
       db = firebase.firestore();
       usuarios = db.collection("Usuarios")
       tiendas = db.collection("Tiendas")
+      pedidos = db.collection("Pedidos")
       anterior = "/index/"
       $$("#atras").on("click", function() {
           console.log(anterior)
@@ -87,7 +96,6 @@
               center: { lat: Latitude, lng: Longitude }
           });
       coords = { lat: Latitude, lng: Longitude };
-      marker = new H.map.Marker(coords);
       var mapEvents = new H.mapevents.MapEvents(map);
 
       // Add behavior to the map: panning, zooming, dragging.
@@ -105,12 +113,11 @@
       map.addObject(markerCarrito);
       map.addObject(bicimap);
       // Add the marker to the map and center the map at the location of the marker:
-      map.addObject(marker);
       map.setCenter(coords);
   };
 
   function activate() {}
-  navigator.geolocation.getCurrentPosition(activate, onError);
+
   // onError Callback receives a PositionError object
   //
 
@@ -181,50 +188,58 @@
 
   })
   $$(document).on('page:init', '.page[data-name="ciclista"]', function(e) {
-
+      items = ""
+      navigator.geolocation.getCurrentPosition(activate, onError);
       console.log(e);
       $$("#bienvenida2").html("<div>Bienvenido " + nombreDeUsuario + " listo para salir a las calles?</div>")
-      $$("#updateC").on("click", function() {
-          mapaA(email)
+      pedidos.get()
+          .then(function(querySnapshot) {
+              var totalPedidos = 0
+              querySnapshot.forEach(function(doc) {
+                  if (doc) {
+                      totalPedidos += 1
+                      $$("#pedidos").html("Hay " + totalPedidos + " pedidos en espera")
+                      $$("#pedido").append('<div id="pedido' + totalPedidos + '" class="accordion-item">' +
+                          '<div  class="accordion-item-toggle">Pedido ' + totalPedidos + '</div>' +
+                          '<div class="accordion-item-content">' +
+                          '<div>' + doc.data().html + '</div>' +
+                          '<div class="row">' +
+                          '<div class="col"></div>' +
+                          '<div class="col">' +
+                          '<p class="row">' +
+                          '<button id=prod' + totalPedidos + ' class="col button button-fill color-green">Tomar pedido</button>' +
+                          '</p>' +
+                          '</div>' +
+                          '</div>' +
+                          '</div>' +
+                          '</div>'
+                      )
+                      $$("#prod" + totalPedidos).on("click", function() {
+                          var mail = doc.id
+                          var borrar = 'pedido' + totalPedidos
+                          alert(borrar)
+                          $$("#" + borrar).remove()
+                          alert(mail)
+                          db.collection("Pedidos").doc(mail).delete()
 
-          function mapaA(email) {
-              var usuario = usuarios.doc(email)
-              usuario.get().then((doc) => {
-                  if (doc.exists) {
-                      latUsuario = doc.data().lat
-                      longUsuario = doc.data().long
-                      console.log(latUsuario, longUsuario)
+                          .then(function() {
+                              console.log("Documento borrado!");
+                          })
+
+                          .catch(function(error) {
+                              console.error("Error: ", error);
+                          });
+                      })
                   } else {
-                      console.log("No se encontro el dato del usuario")
+                      $$("#pedidos").html("No se han realizado pedidos")
                   }
-              }).catch((error) => {
-                  console.log("No se pudieron obtener los datos del usuario" + error)
               })
-          }
-          map.removeObject(bicimap)
-          bicimap = new H.map.Marker({ lat: latUsuario, lng: longUsuario }, { icon: bici });
-          map.addObject(bicimap)
-      })
-      $$("#subir").on("click", function() {
-          updatePoss(email)
-
-          function updatePoss(email) {
-
-              //agregar registros temporales de ubicacion F&01
-              db.collection("Usuarios").doc(email).update({ lat: "-41.9731194", long: "-71.53961967" })
-                  .catch(function(error) {
-                      console.log("Error: " + error);
-                  })
-
-              .then(function() {
-                  console.log("posicion actualizada");
-              })
-
-          }
-
+          })
+      $$("#tomar").on("click", function() {
+          pedidos.doc(this.id)
+          $$("#carritos").append('<div class="swiper-slide">' + doc.data().html + '</div>')
       })
 
-      navigator.geolocation.getCurrentPosition(onSuccess, onError);
 
 
   })
@@ -283,6 +298,16 @@
       }
   })
   $$(document).on('page:init', '.page[data-name="cliente"]', function(e) {
+      // Do something here when page with data-name="about" attribute loaded and initialized
+      console.log(e);
+      $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
+  })
+  $$(document).on('page:init', '.page[data-name="rMapa"]', function(e) {
+      // Do something here when page with data-name="about" attribute loaded and initialized
+      console.log(e);
+      $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
+  })
+  $$(document).on('page:init', '.page[data-name="bienvenida"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       console.log(e);
       $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
@@ -418,7 +443,6 @@
               horario: $$("#horario").val(), //F&02
               imagen: $$("#imagen").val(),
               color: colorPickerWheel.getValue().hex
-
           };
           db.collection("Tiendas").doc("tienda" + tienda).set(data)
               .catch(function(error) {
@@ -438,8 +462,27 @@
   $$(document).on('page:init', '.page[data-name="tienda"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       cargarTiendas()
+      $$("#confirmarCarrito").on("click", function() {
+          var data = {
+              html: masterCarrito,
+          };
+          console.log(email)
+          console.log(masterCarrito)
+          db.collection("Pedidos").doc(email).get()
+              .then(function(doc) {
+                  if (doc.data()) {
+                      alert("Usted ya tiene un pedido en curso")
+                  } else {
+                      db.collection("Pedidos").doc(email).set(data)
+                      alert("pedido efectuado")
+                  }
+              })
+      })
       $$("#botonMas").on("click", function() {
           $$("#listaCarrito").html(masterCarrito)
+          $$(".borrar").on("click", function() {
+              $$("#" + this.id).remove()
+          })
       })
 
 
@@ -449,7 +492,7 @@
               .then(function(querySnapshot) {
                   querySnapshot.forEach(function(doc) {
                       //doc.data().nombre)
-                      $$("#pantallaTiendas").append('<div id="tienda' + numeroDeTienda + '" class="justify-content-center display-flex"> ' +
+                      $$("#pantallaTiendas").append('<div id="tienda' + numeroDeTienda + '" class="tiendaCss justify-content-center display-flex"> ' +
                           '<div id="logo" class="col-33">' +
                           '<img id="logo1" src="' + doc.data().imagen + '" alt="">' +
                           '</div>' +
@@ -494,7 +537,7 @@
                   querySnapshot.forEach(function(doc) {
 
                       prod += 1
-                      prodArray["producto" + prod] = '<li><div id="producto' + prod + '" class="justify-content-center display-flex"> ' +
+                      prodArray[tienda + "producto" + prod] = '<li><div id="' + tienda + 'producto' + prod + '" class="borrar justify-content-center display-flex"> ' +
                           '<div id="logo" class="col-33">' +
                           '<img id="logo1" src="' + doc.data().imagen + '" alt="">' +
                           '</div>' +
@@ -505,9 +548,9 @@
                           '<p>' + doc.data().precio + 'x' + doc.data().medida + '</p>' +
                           '</div>' +
                           '</div></li>'
-                      $$("#pantallaProductos").append(prodArray["producto" + prod])
+                      $$("#pantallaProductos").append(prodArray[tienda + "producto" + prod])
 
-                      $$("#producto" + prod).on("click", function() {
+                      $$("#" + tienda + "producto" + prod).on("click", function() {
                           onClick(this.id)
                       })
                   });
@@ -520,7 +563,7 @@
       }
 
       function onClick(id) {
-          alert(id)
+
           console.log(prodArray[id])
           masterCarrito += prodArray[id]
       }
