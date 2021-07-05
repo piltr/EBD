@@ -15,7 +15,7 @@
 
 #bienvenidaContent {
     margin-top: 60px;
-    background-image: url("img\backgrund.jpg")
+    background-image: url("img/background.jpg")
 }
 
 #inputs {
@@ -117,7 +117,42 @@
     background-color: violet;
 }
 
+.ajustarImg {
+    width: 100%;
+    height: 100%;
+    border-radius: 5vw;
+}
+
 #caraCiclista {
     width: 100%;
     height: 100%;
+}
+
+#tiendasCliente {
+    background-color: cadetblue;
+}
+
+.background-index {
+    background-image: url("img/fondo1.png");
+}
+
+.fondo-gris {
+    background-color: cadetblue;
+}
+
+#userEmail,
+#userContraseña {
+    border: 1vh;
+    background-color: rgba(0, 0, 0, 0.432);
+    width: 90%;
+}
+
+.align-center {
+    display: flex;
+    justify-content: center;
+    color: blanchedalmond;
+}
+
+#ingresar {
+    margin-top: 8vh;
 }

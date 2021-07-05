@@ -3,8 +3,7 @@
 
 <head>
     <!--
-        53hs
-        13:30 -- 
+    62hs
         Customize this policy to fit your own app's needs. For more guidance, see:
             https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
         Some notes:
@@ -36,9 +35,13 @@
     <link rel="stylesheet" href="css/app.css">
     <!-- estilos personalizados-->
     <link rel="stylesheet" href="css/estilo.css">
+    <meta name="viewport" content="initial-scale=1.0,
+            width=device-width" />
     <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
 </head>
 
 <body>
@@ -59,48 +62,40 @@
                 </div>
             </div>
 
-            <!-- Toolbar -->
+            <!-- Toolbar 
             <div class="toolbar toolbar-bottom">
                 <div class="toolbar-inner">
-                    <!-- Toolbar links -->
+
                     <a href="#" class="link">Link 1</a>
                     <a href="#" id="link2" class="link">Link 2</a>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Initial Page, "data-name" contains page name -->
             <div data-name="index" class="page">
                 <!-- Scrollable page content -->
-                <div id="index" class="page-content">
+                <div id="index" class="background-index page-content">
                     <div class="block">
 
-                        <div class="list">
-                            <ul>
 
-                                <!-- additional "item-input-outline" class -->
-
-                                <li class="item-content item-input item-input-outline">
-                                    <div class="item-inner">
-                                        <div class="item-title item-label">Email</div>
-                                        <div class="item-input-wrap">
-                                            <input id="userEmail" type="text" name="Email">
-                                            <span class="input-clear-button"></span>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li class="item-content item-input item-input-outline">
-                                    <div class="item-inner">
-                                        <div class="item-title item-label">Contrseña</div>
-                                        <div class="item-input-wrap">
-                                            <input id="userContraseña" type="password" name="pass">
-                                            <span class="input-clear-button"></span>
-                                        </div>
-                                    </div>
-                                </li>
-
-                            </ul>
+                        <div class="item-inner">
+                            <div class="item-title item-label">Email</div>
+                            <div class="align-center item-input-wrap">
+                                <input id="userEmail" class="input-style" type="text" name="Email">
+                                <span class="input-clear-button"></span>
+                            </div>
                         </div>
+
+                        <div class="item-inner">
+                            <div class="item-title item-label">Contrseña</div>
+                            <div class="align-center item-input-wrap">
+                                <input id="userContraseña" type="password" name="pass">
+                                <span class="input-clear-button"></span>
+                            </div>
+                        </div>
+
+
+
                         <div id="ingresar">
                             <button class="button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}" @click=${load}>
                           <span class="preloader"></span>
@@ -114,16 +109,6 @@
                           <span>Registrarse</span>
                           </button>
                         </a>
-
-                        <div>
-                            <a href="/ciclista/" data-view=".page-content">ciclista</a>
-                            <a href="/cliente/" data-view=".page-content">cliente</a>
-                            <a href="/tienda/" data-view=".page-content">tienda</a>
-                            <a href="/registrot/" data-view=".page-content">tiendaR</a>
-                            <a href="/agregarProducto/" data-view=".page-content">producto</a>
-                            <a href="/bienvenida/" data-view=".page-content">bienvenida</a>
-                            <a href="/rMapa/" data-view=".page-content">rMapa</a>
-                        </div>
 
                     </div>
                 </div>

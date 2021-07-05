@@ -4,6 +4,7 @@
   var pos, latitud, longitud;
   prodArray = []
   masterCarrito = ""
+  tiendasPedido = ""
 
   var app = new Framework7({
       // App root element
@@ -26,8 +27,8 @@
                   url: 'cliente.html',
               },
               {
-                  path: '/bienvenida/',
-                  url: 'bienvenida.html',
+                  path: '/admin/',
+                  url: 'admin.html',
               },
               {
                   path: '/rMapa/',
@@ -78,6 +79,7 @@
           anterior = "/index/"
       })
   });
+
   var onSuccess = function(position) {
       Latitude = position.coords.latitude
       Longitude = position.coords.longitude
@@ -92,7 +94,7 @@
       map = new H.Map(
           document.getElementById('mapContainer'),
           defaultLayers.vector.normal.map, {
-              zoom: 15,
+              zoom: 14,
               center: { lat: Latitude, lng: Longitude }
           });
       coords = { lat: Latitude, lng: Longitude };
@@ -100,6 +102,15 @@
 
       // Add behavior to the map: panning, zooming, dragging.
       var behavior = new H.mapevents.Behavior(mapEvents);
+      var ui = H.ui.UI.createDefault(map, defaultLayers, 'es-ES');
+      var bubble = new H.ui.InfoBubble({ lng: -41.9595776, lat: -71.5343402 }, {
+          content: '<b>Hello World!</b>'
+      });
+
+      // Add info bubble to the UI:
+      ui.addBubble(bubble);
+
+      //var ui = H.ui.UI.createDefault(map, defaultLayers, );
 
       // Create a marker icon from an image URL:
       var icon = new H.map.Icon('img/mapaCarrito.png');
@@ -115,6 +126,7 @@
       // Add the marker to the map and center the map at the location of the marker:
       map.setCenter(coords);
   };
+
 
   function activate() {}
 
@@ -135,17 +147,17 @@
   $$(document).on('page:init', '.page[data-name="index"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       platform = new H.service.Platform({
-          'apikey': '8lEBP2-tHJsihdog6soHSApasBhLOXzrTWrTDsPUPw4'
+          'apikey': '2cipsKQuNZiuO5kHZH83G7RiuXseyUc-Lp0Xj2sEx0w'
       });
 
       $$("#registrarse").on("click", function() {})
       $$("#ingresar").on("click", ingresar)
 
       function ingresar() {
-          email = "ciclista@ejemplo.com"
-          password = "asd15987"
-              //email = $$("#userEmail").val()
-              //var password = $$("#userContraseña").val()
+          // email = "cliente@ejemplo.com"
+          // password = "asd15987"
+          email = $$("#userEmail").val()
+          var password = $$("#userContraseña").val()
           firebase.auth().signInWithEmailAndPassword(email, password)
               .then(() => {
                   usuarios.doc(email).get()
@@ -157,6 +169,8 @@
                           } else if (tipo == "repartidores") {
 
                               mainView.router.navigate('/ciclista/');
+                          } else if (tipo == "admin") {
+                              mainView.router.navigate('/admin/');
                           }
                       })
               })
@@ -188,57 +202,116 @@
 
   })
   $$(document).on('page:init', '.page[data-name="ciclista"]', function(e) {
+      rTiendas = ""
       items = ""
-      navigator.geolocation.getCurrentPosition(activate, onError);
+
+      $$("#updateC").on("click", function() {
+          mapaA(email)
+
+          function mapaA(email) {
+              var usuario = usuarios.doc(email)
+              usuario.get().then((doc) => {
+                  if (doc.exists) {
+                      latUsuario = doc.data().lat
+                      longUsuario = doc.data().long
+                      console.log(latUsuario, longUsuario)
+                  } else {
+                      console.log("No se encontro el dato del usuario")
+                  }
+              }).catch((error) => {
+                  console.log("No se pudieron obtener los datos del usuario" + error)
+              })
+          }
+          map.removeObject(bicimap)
+          bicimap = new H.map.Marker({ lat: latUsuario, lng: longUsuario }, { icon: bici });
+          map.addObject(bicimap)
+      })
+      $$("#subir").on("click", function() {
+          updatePoss(email)
+
+          function updatePoss(email) {
+
+              //agregar registros temporales de ubicacion F&01
+              db.collection("Usuarios").doc(email).update({ lat: "-41.9731194", long: "-71.53961967" })
+                  .catch(function(error) {
+                      console.log("Error: " + error);
+                  })
+
+              .then(function() {
+                  console.log("posicion actualizada");
+              })
+
+          }
+
+          navigator.geolocation.getCurrentPosition(onSuccess, onError);
+      })
+
       console.log(e);
       $$("#bienvenida2").html("<div>Bienvenido " + nombreDeUsuario + " listo para salir a las calles?</div>")
       pedidos.get()
           .then(function(querySnapshot) {
               var totalPedidos = 0
+              var arrPedidos = []
               querySnapshot.forEach(function(doc) {
                   if (doc) {
                       totalPedidos += 1
+                      arrPedidos["prod" + totalPedidos] = "#data" + totalPedidos
                       $$("#pedidos").html("Hay " + totalPedidos + " pedidos en espera")
-                      $$("#pedido").append('<div id="pedido' + totalPedidos + '" class="accordion-item">' +
+                      $$("#pedido").append('<div id="pedido' + totalPedidos + '" class="fondo-gris accordion-item">' +
                           '<div  class="accordion-item-toggle">Pedido ' + totalPedidos + '</div>' +
                           '<div class="accordion-item-content">' +
-                          '<div>' + doc.data().html + '</div>' +
+                          '<div id="data' + totalPedidos + '">' + doc.data().html + '</div>' +
                           '<div class="row">' +
                           '<div class="col"></div>' +
                           '<div class="col">' +
                           '<p class="row">' +
-                          '<button id=prod' + totalPedidos + ' class="col button button-fill color-green">Tomar pedido</button>' +
+                          '<button id="prod' + totalPedidos + '" class="col button button-fill color-green">Tomar pedido</button>' +
                           '</p>' +
                           '</div>' +
                           '</div>' +
                           '</div>' +
                           '</div>'
                       )
+
+
                       $$("#prod" + totalPedidos).on("click", function() {
+                          alert("asd")
+                          rTiendas = doc.data().tiendas
                           var mail = doc.id
                           var borrar = 'pedido' + totalPedidos
-                          alert(borrar)
+                          alert(arrPedidos[this.id])
+                          carritoRepartidor = $$(arrPedidos[this.id]).html()
                           $$("#" + borrar).remove()
-                          alert(mail)
-                          db.collection("Pedidos").doc(mail).delete()
+                              //db.collection("Pedidos").doc(mail).delete()
 
-                          .then(function() {
-                              console.log("Documento borrado!");
-                          })
+                          // .then(function() {
+                          //     console.log("Documento borrado!");
+                          // })
 
-                          .catch(function(error) {
-                              console.error("Error: ", error);
-                          });
+                          // .catch(function(error) {
+                          //     console.error("Error: ", error);
+                          // });
+                          limpiarArray()
                       })
                   } else {
                       $$("#pedidos").html("No se han realizado pedidos")
                   }
               })
+
           })
-      $$("#tomar").on("click", function() {
-          pedidos.doc(this.id)
-          $$("#carritos").append('<div class="swiper-slide">' + doc.data().html + '</div>')
-      })
+
+      function limpiarArray() {
+          aTiendas = rTiendas.split([","])
+          aTiendas.pop()
+
+          tiendasSinDuplicados = aTiendas.filter((valor, indice) => {
+              return aTiendas.indexOf(valor) === indice;
+          });
+
+          console.log(tiendasSinDuplicados);
+          mainView.router.navigate('/rMapa/');
+
+      }
 
 
 
@@ -300,11 +373,37 @@
   $$(document).on('page:init', '.page[data-name="cliente"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       console.log(e);
-      $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
+      $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " que vas a pedir hoy?</div>")
+      $$("#tiendasCliente").on("click", function() {
+          mainView.router.navigate("/tienda/")
+      })
   })
   $$(document).on('page:init', '.page[data-name="rMapa"]', function(e) {
+      navigator.geolocation.getCurrentPosition(onSuccess, onError);
+      alert(carritoRepartidor)
+      $$("#carritoRepartidor").html(carritoRepartidor)
+      iconoTienda = []
+      iconosTienda = []
+      console.log(tiendasSinDuplicados);
+      cargarIconos()
+
+      function cargarIconos() {
+
+          for (let i = 0; i < tiendasSinDuplicados.length; i++) {
+              var tienda = tiendasSinDuplicados[i];
+              tiendas.doc(tienda).get()
+                  .then(function(doc) {
+                      var lat = doc.data().lat
+                      var lng = doc.data().long
+                      iconosTienda[doc.id] = new H.map.Icon(doc.data().icono);
+                      iconoTienda[doc.id] = new H.map.Marker({ lat: lat, lng: lng }, { icon: iconosTienda[doc.id] });
+                      map.addObject(iconoTienda[doc.id])
+                  })
+          }
+      }
       // Do something here when page with data-name="about" attribute loaded and initialized
       console.log(e);
+
       $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
   })
   $$(document).on('page:init', '.page[data-name="bienvenida"]', function(e) {
@@ -314,6 +413,7 @@
   })
   $$(document).on('page:init', '.page[data-name="agregarProducto"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
+      anterior = "/admin/"
       console.log(e);
       $$("#registroProd").on("click", function() {
           contarProductos($$("#idTienda").val())
@@ -365,7 +465,7 @@
   $$(document).on('page:init', '.page[data-name="registrot"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       console.log(e);
-
+      anterior = "/admin/"
 
 
       colorPickerWheel = app.colorPicker.create({
@@ -461,10 +561,13 @@
   })
   $$(document).on('page:init', '.page[data-name="tienda"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
+      anterior = "/cliente/"
+      app.preloader.show();
       cargarTiendas()
       $$("#confirmarCarrito").on("click", function() {
           var data = {
               html: masterCarrito,
+              tiendas: tiendasPedido,
           };
           console.log(email)
           console.log(masterCarrito)
@@ -518,6 +621,7 @@
                   console.log("Error: ", error);
 
               });
+          app.preloader.hide();
       }
 
       console.log(e);
@@ -551,7 +655,7 @@
                       $$("#pantallaProductos").append(prodArray[tienda + "producto" + prod])
 
                       $$("#" + tienda + "producto" + prod).on("click", function() {
-                          onClick(this.id)
+                          onClick(this.id, tienda)
                       })
                   });
               })
@@ -562,8 +666,8 @@
               });
       }
 
-      function onClick(id) {
-
+      function onClick(id, t) {
+          tiendasPedido += t + ","
           console.log(prodArray[id])
           masterCarrito += prodArray[id]
       }
