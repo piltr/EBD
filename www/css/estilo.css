@@ -1,4 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Rancho&display=swap');
+* {
+    list-style: none
+}
+
 #titulo {
     padding-bottom: 0px;
     padding-top: 30px;
@@ -134,10 +138,15 @@
 
 .background-index {
     background-image: url("img/fondo1.png");
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .fondo-gris {
-    background-color: cadetblue;
+    background-color: rgba(83, 104, 66, 0.801);
+    display: flex;
+    border-radius: 2vh;
+    margin-bottom: 2vh;
 }
 
 #userEmail,
@@ -145,6 +154,7 @@
     border: 1vh;
     background-color: rgba(0, 0, 0, 0.432);
     width: 90%;
+    border-radius: 2vh;
 }
 
 .align-center {
@@ -155,4 +165,65 @@
 
 #ingresar {
     margin-top: 8vh;
+}
+
+.estiloTexto {
+    font-family: 'Rancho', cursive;
+    font-size: 6vh;
+    color: black;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    background: rgba(39, 39, 54, 0.877);
+    border-radius: 2vh;
+}
+
+#logo1 {
+    border-radius: 2vh;
+    width: 100%;
+    object-fit: cover;
+}
+
+.sin-fondo {
+    background-color: rgba(255, 0, 0, 0.096);
+}
+
+.estiloProducto {
+    outline: darkblue;
+    outline: 1vw;
+    width: 100%;
+    background-color: cadetblue;
+    margin-top: 1vh;
+    border-radius: 2vw;
+    font-family: 'Rancho', cursive;
+    font-size: 4vh;
+}
+
+.estiloProducto>div>p {
+    margin-block-start: 0em;
+    margin-block-end: 0em;
+}
+
+p {
+    margin: 0px;
+}
+
+.popover {
+    width: 80vw;
+}
+
+#logo {
+    width: 50%;
+}
+
+#descripcion {
+    width: 50%;
+    font-family: 'Rancho', cursive;
+    font-size: 4vh;
+    align-items: center;
+}
+
+.back-g {
+    background-color: #EDF2F5;
 }

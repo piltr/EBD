@@ -5,6 +5,8 @@
   prodArray = []
   masterCarrito = ""
   tiendasPedido = ""
+  destinoPedidoLat = ""
+  destinoPedidoLong = ""
 
   var app = new Framework7({
       // App root element
@@ -98,7 +100,7 @@
               center: { lat: Latitude, lng: Longitude }
           });
       coords = { lat: Latitude, lng: Longitude };
-      var mapEvents = new H.mapevents.MapEvents(map);
+      mapEvents = new H.mapevents.MapEvents(map);
 
       // Add behavior to the map: panning, zooming, dragging.
       var behavior = new H.mapevents.Behavior(mapEvents);
@@ -113,16 +115,18 @@
       //var ui = H.ui.UI.createDefault(map, defaultLayers, );
 
       // Create a marker icon from an image URL:
-      var icon = new H.map.Icon('img/mapaCarrito.png');
+      icon = new H.map.Icon('img/mapaCasita.png');
       bici = new H.map.Icon('img/mapaBici.png');
 
       // Create a marker using the previously instantiated icon:
-      var markerCarrito = new H.map.Marker({ lat: Latitude, lng: Longitude }, { icon: icon });
+      markerCarrito = new H.map.Marker({ lat: Latitude, lng: Longitude }, { icon: icon });
       bicimap = new H.map.Marker({ lat: "-41.9595776", lng: "-71.5343402" }, { icon: bici });
 
       // Add the marker to the map:
       map.addObject(markerCarrito);
+
       map.addObject(bicimap);
+
       // Add the marker to the map and center the map at the location of the marker:
       map.setCenter(coords);
   };
@@ -258,7 +262,7 @@
                       arrPedidos["prod" + totalPedidos] = "#data" + totalPedidos
                       $$("#pedidos").html("Hay " + totalPedidos + " pedidos en espera")
                       $$("#pedido").append('<div id="pedido' + totalPedidos + '" class="fondo-gris accordion-item">' +
-                          '<div  class="accordion-item-toggle">Pedido ' + totalPedidos + '</div>' +
+                          '<div  class="sin-fondo accordion-item-toggle"><div><p class="estiloTexto">Pedido' + totalPedidos + '</div></p></div>' +
                           '<div class="accordion-item-content">' +
                           '<div id="data' + totalPedidos + '">' + doc.data().html + '</div>' +
                           '<div class="row">' +
@@ -275,22 +279,23 @@
 
 
                       $$("#prod" + totalPedidos).on("click", function() {
-                          alert("asd")
                           rTiendas = doc.data().tiendas
+                          destinoPedidoLat = doc.data().latD
+                          destinoPedidoLong = doc.data().longD
+                          alert(destinoPedidoLat)
                           var mail = doc.id
                           var borrar = 'pedido' + totalPedidos
-                          alert(arrPedidos[this.id])
                           carritoRepartidor = $$(arrPedidos[this.id]).html()
                           $$("#" + borrar).remove()
-                              //db.collection("Pedidos").doc(mail).delete()
+                          db.collection("Pedidos").doc(mail).delete()
 
-                          // .then(function() {
-                          //     console.log("Documento borrado!");
-                          // })
+                          .then(function() {
+                              console.log("Documento borrado!");
+                          })
 
-                          // .catch(function(error) {
-                          //     console.error("Error: ", error);
-                          // });
+                          .catch(function(error) {
+                              console.error("Error: ", error);
+                          });
                           limpiarArray()
                       })
                   } else {
@@ -379,13 +384,66 @@
       })
   })
   $$(document).on('page:init', '.page[data-name="rMapa"]', function(e) {
-      navigator.geolocation.getCurrentPosition(onSuccess, onError);
-      alert(carritoRepartidor)
+      usuarios.doc("ciclista@ejemplo.com")
+          .onSnapshot((doc) => {
+              console.log("Current data: ", doc.data().lat, doc.data().long);
+          });
+      andarEnBici()
+
+
+
+      function andarEnBici() {
+
+          var latMax = -41.9604985
+          var latMin = -41.9636177
+          var lat = -41.9636177
+          var long = -71.536930
+          subiendo = 1
+
+          setInterval(function() {
+              if (subiendo) {
+                  if (lat < latMax) {
+                      lat += .00005
+                      long += .00002
+                      map.removeObject(bicimap)
+                      bicimap = new H.map.Marker({ lat: lat, lng: long }, { icon: bici });
+                      map.addObject(bicimap)
+
+                  } else {
+                      subiendo = 0
+                  }
+              }
+              if (!subiendo) {
+                  if (lat > latMin) {
+                      lat -= .00002
+                      long -= .00005
+                      map.removeObject(bicimap)
+                      bicimap = new H.map.Marker({ lat: lat, lng: long }, { icon: bici });
+                      map.addObject(bicimap)
+                  } else {
+                      subiendo = 1
+                  }
+              }
+          }, 250);
+      }
+
+      navigator.geolocation.getCurrentPosition(onSuccess, onError)
+      setTimeout(function() {
+          map.removeObject(markerCarrito)
+          markerCarrito = new H.map.Marker({ lat: destinoPedidoLat, lng: destinoPedidoLong }, { icon: icon });
+          map.addObject(markerCarrito)
+      }, 500);
+
+
+
+
       $$("#carritoRepartidor").html(carritoRepartidor)
       iconoTienda = []
       iconosTienda = []
       console.log(tiendasSinDuplicados);
+
       cargarIconos()
+
 
       function cargarIconos() {
 
@@ -400,8 +458,10 @@
                       map.addObject(iconoTienda[doc.id])
                   })
           }
+
+
+
       }
-      // Do something here when page with data-name="about" attribute loaded and initialized
       console.log(e);
 
       $$("#bienvenida1").html("<div>Bienvenido " + nombreDeUsuario + " listo para hacer un pedido?</div>")
@@ -562,12 +622,15 @@
   $$(document).on('page:init', '.page[data-name="tienda"]', function(e) {
       // Do something here when page with data-name="about" attribute loaded and initialized
       anterior = "/cliente/"
-      app.preloader.show();
+
+
       cargarTiendas()
       $$("#confirmarCarrito").on("click", function() {
           var data = {
               html: masterCarrito,
               tiendas: tiendasPedido,
+              latD: latitudPedido,
+              longD: longitudPedido,
           };
           console.log(email)
           console.log(masterCarrito)
@@ -587,9 +650,15 @@
               $$("#" + this.id).remove()
           })
       })
+      navigator.geolocation.getCurrentPosition(onSuccess2, onError);
 
+      function onSuccess2(position) {
+          latitudPedido = position.coords.latitude
+          longitudPedido = position.coords.longitude
+      }
 
       function cargarTiendas() {
+          app.preloader.show();
           numeroDeTienda = 1
           tiendas.get()
               .then(function(querySnapshot) {
@@ -606,14 +675,17 @@
                           '<p> Horario de atencion: ' + doc.data().horario + '</p>' +
                           '</div>' +
                           '</div>')
+
                       $$("#tienda" + numeroDeTienda).on("click", function() {
                           nroTienda = this.id
                           mainView.router.navigate('/productos/');
                           anterior = "/tienda/"
                       })
 
+
                       $$("#tienda" + numeroDeTienda).css("background-color", doc.data().color)
                       numeroDeTienda += 1
+                      app.preloader.hide();
                   });
               })
               .catch(function(error) {
@@ -621,7 +693,7 @@
                   console.log("Error: ", error);
 
               });
-          app.preloader.hide();
+
       }
 
       console.log(e);
@@ -641,14 +713,12 @@
                   querySnapshot.forEach(function(doc) {
 
                       prod += 1
-                      prodArray[tienda + "producto" + prod] = '<li><div id="' + tienda + 'producto' + prod + '" class="borrar justify-content-center display-flex"> ' +
-                          '<div id="logo" class="col-33">' +
+                      prodArray[tienda + "producto" + prod] = '<li class="estiloProducto"><div id="' + tienda + 'producto' + prod + '" class="borrar display-flex"> ' +
+                          '<div id="logo" class="col-50">' +
                           '<img id="logo1" src="' + doc.data().imagen + '" alt="">' +
                           '</div>' +
-                          '<div class="col-33">' +
+                          '<div id="descripcion" class="col-50">' +
                           '<p>' + doc.data().nombre + '</p>' +
-                          '</div>' +
-                          '<div class="col-33">' +
                           '<p>' + doc.data().precio + 'x' + doc.data().medida + '</p>' +
                           '</div>' +
                           '</div></li>'
